@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>风险评估 - 赛博英伟达量子分析系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 全局变量 */
+        :root {
+            --primary-bg: #000814;
+            --secondary-bg: #001529;
+            --accent-color: #00f7ff;
+            --text-color: #e0e0e0;
+            --chart-bg: #002a4e;
+            --positive-color: #00ff9d;
+            --negative-color: #ff4500;
+            --neon-blue: #18f0ff;
+            --quantum-purple: #9b30ff;
+        }
+
+        /* 全局样式 */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* 标题样式 */
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* 主标题 */
+        .dashboard-title {
+            text-align: center;
+            font-size: 2.5em;
+            margin: 30px 0;
+            background: linear-gradient(to right, var(--neon-blue), var(--quantum-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        /* 发光动画 */
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--neon-blue);
+            }
+            to {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--quantum-purple);
+            }
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 卡片容器 */
+        .card {
+            background: var(--chart-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0,247,255,0.2);
+        }
+
+        /* 卡片标题 */
+        .card-title {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* 数据项 */
+        .data-item {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* 数据标签 */
+        .data-label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        /* 数据值 */
+        .data-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        /* 正值 */
+        .positive {
+            color: var(--positive-color);
+        }
+
+        /* 负值 */
+        .negative {
+            color: var(--negative-color);
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(0,0,0,0.5);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,247,255,0.3);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            transition: color 0.3s;
+        }
+
+        .navbar-link:hover {
+            color: var(--accent-color);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            background: linear-gradient(45deg, var(--neon-blue), var(--quantum-purple));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 15px var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* 图表容器 */
+        .chart-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: rgba(0,0,0,0.5);
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* 日期显示 */
+        .date-display {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 图片样式 */
+        .chart-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* 风险评级 */
+        .risk-rating {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .risk-label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+            width: 30%;
+        }
+
+        .risk-bar {
+            width: 50%;
+            height: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .risk-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(to right, var(--positive-color), var(--negative-color));
+        }
+
+        .risk-value {
+            width: 20%;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .navbar-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">赛博创造英伟达量子分析系统</a>
+            <div class="navbar-links">
+                <a href="technical-analysis.html" class="navbar-link">技术分析</a>
+                <a href="fundamental-analysis.html" class="navbar-link">基本面分析</a>
+                <a href="market-position.html" class="navbar-link">市场地位</a>
+                <a href="risk-assessment.html" class="navbar-link">风险评估</a>
+                <a href="trading-recommendations.html" class="navbar-link">交易建议</a>
+                <a href="interactive-tools.html" class="navbar-link">互动工具</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <div>
+        <h1 class="dashboard-title">英伟达风险评估</h1>
+        
+        <div class="container">
+            <div class="date-display">
+                <span id="currentDate">2025年3月27日</span>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">风险概览</h2>
+                <p>尽管英伟达在AI芯片市场占据主导地位，但投资者仍需关注以下主要风险因素：</p>
+                
+                <div class="grid">
+                    <div class="data-item">
+                        <div class="data-label">总体风险评级</div>
+                        <div class="data-value">中等</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">短期波动风险</div>
+                        <div class="data-value negative">高</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">长期投资风险</div>
+                        <div class="data-value positive">低</div>
+                    </div>
+                </div>
+                
+                <img src="images/risk_assessment_radar.png" alt="风险评估雷达图" class="chart-image">
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">估值风险</h2>
+                <p>英伟达当前估值较高，可能面临估值回调的风险。</p>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">市盈率风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 75%;"></div>
+                    </div>
+                    <div class="risk-value negative">高 (75%)</div>
+                </div>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">市销率风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 80%;"></div>
+                    </div>
+                    <div class="risk-value negative">高 (80%)</div>
+                </div>
+                
+                <p>英伟达当前市盈率为35.2倍，市销率为18.7倍，均高于半导体行业平均水平。虽然这些估值可以通过公司的高增长率来部分解释，但如果增长速度放缓或低于预期，可能导致估值回调。</p>
+                
+                <img src="images/valuation_comparison.png" alt="估值比较" class="chart-image">
+                <p>与历史估值和行业平均水平相比，英伟达当前估值处于较高水平，但考虑到其增长率，PEG比率仍低于1，表明相对于增长率，估值仍具有合理性。</p>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">竞争风险</h2>
+                <p>虽然英伟达目前在AI芯片市场占据主导地位，但竞争正在加剧。</p>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">传统竞争对手风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 60%;"></div>
+                    </div>
+                    <div class="risk-value">中等 (60%)</div>
+                </div>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">云服务提供商自研芯片风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 70%;"></div>
+                    </div>
+                    <div class="risk-value negative">高 (70%)</div>
+                </div>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">初创公司创新风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 50%;"></div>
+                    </div>
+                    <div class="risk-value">中等 (50%)</div>
+                </div>
+                
+                <p>主要竞争风险来自三个方面：</p>
+                <ol>
+                    <li><strong>传统竞争对手</strong>：AMD和Intel正在加大在AI芯片领域的投入，AMD的MI300系列已经开始获得市场份额。</li>
+                    <li><strong>云服务提供商</strong>：Google、Amazon和Microsoft等主要客户正在开发自己的AI芯片，可能减少对英伟达产品的依赖。</li>
+                    <li><strong>AI芯片初创公司</strong>：Cerebras、Graphcore等初创公司正在开发专用AI芯片，可能在特定应用场景中挑战英伟达的地位。</li>
+                </ol>
+                
+                <img src="images/competitor_threat_analysis.png" alt="竞争威胁分析" class="chart-image">
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">收入集中风险</h2>
+                <p>英伟达的收入高度集中在数据中心业务和少数大客户，增加了业务风险。</p>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">业务线集中风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 75%;"></div>
+                    </div>
+                    <div class="risk-value negative">高 (75%)</div>
+                </div>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">客户集中风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 65%;"></div>
+                    </div>
+                    <div class="risk-value">中等 (65%)</div>
+                </div>
+                
+                <p>数据中心业务占英伟达总收入的75%以上，而前五大客户可能贡献了超过50%的收入。这种集中度使英伟达容易受到特定市场或客户需求变化的影响。</p>
+                
+                <img src="images/revenue_concentration.png" alt="收入集中度" class="chart-image">
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">地缘政治风险</h2>
+                <p>作为美国科技公司，英伟达面临全球地缘政治紧张局势带来的风险。</p>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">中美贸易摩擦风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 70%;"></div>
+                    </div>
+                    <div class="risk-value negative">高 (70%)</div>
+                </div>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">出口管制风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 65%;"></div>
+                    </div>
+                    <div class="risk-value">中等 (65%)</div>
+                </div>
+                
+                <p>美国对中国的芯片出口限制已经影响了英伟达的部分业务。未来地缘政治紧张局势的加剧可能进一步限制英伟达在全球市场的业务拓展。</p>
+                
+                <img src="images/geopolitical_risk.png" alt="地缘政治风险" class="chart-image">
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">技术变革风险</h2>
+                <p>AI领域技术发展迅速，新架构或计算范式的出现可能挑战英伟达的地位。</p>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">新架构风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 45%;"></div>
+                    </div>
+                    <div class="risk-value">中等 (45%)</div>
+                </div>
+                
+                <div class="risk-rating">
+                    <div class="risk-label">量子计算风险</div>
+                    <div class="risk-bar">
+                        <div class="risk-fill" style="width: 30%;"></div>
+                    </div>
+                    <div class="risk-value positive">低 (30%)</div>
+                </div>
+                
+                <p>虽然短期内GPU仍是AI计算的主流架构，但长期来看，专用AI芯片、神经形态计算或量子计算等新技术可能改变计算格局。英伟达需要持续创新以应对这些潜在挑战。</p>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">量子风险评估结论</h2>
+                <p>基于量子分析算法，英伟达的整体风险评级为中等。虽然公司面临估值、竞争和收入集中等风险，但其强大的市场地位、技术优势和增长前景提供了有力支撑。</p>
+                
+                <div class="grid">
+                    <div class="data-item">
+                        <div class="data-label">短期风险评分</div>
+                        <div class="data-value negative">7.2/10</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">中期风险评分</div>
+                        <div class="data-value">5.5/10</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">长期风险评分</div>
+                        <div class="data-value positive">4.3/10</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">综合风险评分</div>
+                        <div class="data-value">5.7/10</div>
+                    </div>
+                </div>
+                
+                <p>投资者应根据自身风险承受能力和投资期限，制定相应的投资策略。短期投资者应特别关注估值风险和市场波动，而长期投资者则可以更多关注公司的基本面和竞争优势。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 浩南赛博英伟达分析系统 | 基于先进AI算法的股票分析平台 | 联系方式414194762 </p>
+            <p class="data-label">数据更新时间: 2025年3月27日 02:21</p>
+        </div>
+    </footer>
+
+    <script>
+        // 更新当前日期
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+            const currentDate = new Date().toLocaleDateString('zh-CN', dateOptions);
+            document.getElementById('currentDate').textContent = currentDate;
+        });
+    </script>
+</body>
+</html>

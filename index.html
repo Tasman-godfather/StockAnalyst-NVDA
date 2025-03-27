@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛博CybGen英伟达量子分析系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 全局变量 */
+        :root {
+            --primary-bg: #000814;
+            --secondary-bg: #001529;
+            --accent-color: #00f7ff;
+            --text-color: #e0e0e0;
+            --chart-bg: #002a4e;
+            --positive-color: #00ff9d;
+            --negative-color: #ff4500;
+            --neon-blue: #18f0ff;
+            --quantum-purple: #9b30ff;
+        }
+
+        /* 全局样式 */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* 标题样式 */
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* 主标题 */
+        .dashboard-title {
+            text-align: center;
+            font-size: 2.5em;
+            margin: 30px 0;
+            background: linear-gradient(to right, var(--neon-blue), var(--quantum-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        /* 发光动画 */
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--neon-blue);
+            }
+            to {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--quantum-purple);
+            }
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 卡片容器 */
+        .card {
+            background: var(--chart-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0,247,255,0.2);
+        }
+
+        /* 卡片标题 */
+        .card-title {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* 数据项 */
+        .data-item {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* 数据标签 */
+        .data-label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        /* 数据值 */
+        .data-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        /* 正值 */
+        .positive {
+            color: var(--positive-color);
+        }
+
+        /* 负值 */
+        .negative {
+            color: var(--negative-color);
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(0,0,0,0.5);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,247,255,0.3);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            transition: color 0.3s;
+        }
+
+        .navbar-link:hover {
+            color: var(--accent-color);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            background: linear-gradient(45deg, var(--neon-blue), var(--quantum-purple));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 15px var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* 输入框样式 */
+        input, select {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* 图表容器 */
+        .chart-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            height: 400px;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: rgba(0,0,0,0.5);
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* 日期显示 */
+        .date-display {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 计算信息 */
+        .calculation-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: var(--text-color);
+        }
+
+        /* 图片样式 */
+        .chart-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .navbar-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">赛博创造英伟达量子分析系统</a>
+            <div class="navbar-links">
+                <a href="technical-analysis.html" class="navbar-link">技术分析</a>
+                <a href="fundamental-analysis.html" class="navbar-link">基本面分析</a>
+                <a href="market-position.html" class="navbar-link">市场地位</a>
+                <a href="risk-assessment.html" class="navbar-link">风险评估</a>
+                <a href="trading-recommendations.html" class="navbar-link">交易建议</a>
+                <a href="interactive-tools.html" class="navbar-link">互动工具</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <div>
+        <h1 class="dashboard-title">赛博创造英伟达量子分析系统</h1>
+        
+        <div class="container">
+            <div class="date-display">
+                <span id="currentDate">2025年3月27日</span>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">NVIDIA 股票量子预测</h2>
+                <div class="grid">
+                    <div class="data-item">
+                        <div class="data-label">当前价格</div>
+                        <div class="data-value positive">$118.75</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">预测目标价</div>
+                        <div class="data-value positive">$155.20</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">支撑位</div>
+                        <div class="data-value">$105.30</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">阻力位</div>
+                        <div class="data-value">$130.45</div>
+                    </div>
+                </div>
+                
+                <div class="calculation-info">
+                    <p>今日交易建议：</p>
+                    <p>建议做多位置：$110.50-$112.75，止盈$125.00，止损$105.30</p>
+                    <p>风险等级：中等 | 预期收益率：12.5%</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">市场地位分析</h2>
+                <div class="grid">
+                    <div class="data-item">
+                        <div class="data-label">AI芯片市场份额</div>
+                        <div class="data-value positive">85%</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">年度收入增长</div>
+                        <div class="data-value positive">114%</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">毛利率</div>
+                        <div class="data-value positive">78%</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">市场估值</div>
+                        <div class="data-value">35.2x</div>
+                    </div>
+                </div>
+                
+                <img src="images/ai_chip_market_share.png" alt="AI芯片市场份额" class="chart-image">
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">量子分析仪表盘</h2>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <img src="images/nvda_price_trend_1y.png" alt="NVIDIA价格趋势(1年)" class="chart-image">
+                </div>
+                
+                <div class="grid" style="margin-top: 20px;">
+                    <div class="data-item">
+                        <div class="data-label">技术分析信号</div>
+                        <div class="data-value positive">买入</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">AI情绪指标</div>
+                        <div class="data-value positive">强烈看涨</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">量子波动指数</div>
+                        <div class="data-value">76.8</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">市场周期位置</div>
+                        <div class="data-value">扩张期</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid" style="margin-top: 30px;">
+                <a href="technical-analysis.html" class="card" style="text-decoration: none; cursor: pointer;">
+                    <h3 class="card-title">技术分析</h3>
+                    <p>查看详细的价格趋势、技术指标和图表分析</p>
+                    <button class="btn" style="margin-top: 10px;">查看详情</button>
+                </a>
+                
+                <a href="fundamental-analysis.html" class="card" style="text-decoration: none; cursor: pointer;">
+                    <h3 class="card-title">基本面分析</h3>
+                    <p>了解公司财务状况、盈利能力和估值指标</p>
+                    <button class="btn" style="margin-top: 10px;">查看详情</button>
+                </a>
+                
+                <a href="interactive-tools.html" class="card" style="text-decoration: none; cursor: pointer;">
+                    <h3 class="card-title">互动工具</h3>
+                    <p>使用交互式工具进行投资决策分析</p>
+                    <button class="btn" style="margin-top: 10px;">立即使用</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 浩南赛博英伟达分析系统 | 基于先进AI算法的股票分析平台 | 联系方式414194762 </p>
+            <p class="data-label">数据更新时间: 2025年3月27日 02:15</p>
+        </div>
+    </footer>
+
+    <script>
+        // 更新当前日期
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+            const currentDate = new Date().toLocaleDateString('zh-CN', dateOptions);
+            document.getElementById('currentDate').textContent = currentDate;
+        });
+    </script>
+</body>
+</html>

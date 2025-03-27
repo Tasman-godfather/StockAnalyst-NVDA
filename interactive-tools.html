@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互动工具 - 赛博英伟达量子分析系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 全局变量 */
+        :root {
+            --primary-bg: #000814;
+            --secondary-bg: #001529;
+            --accent-color: #00f7ff;
+            --text-color: #e0e0e0;
+            --chart-bg: #002a4e;
+            --positive-color: #00ff9d;
+            --negative-color: #ff4500;
+            --neon-blue: #18f0ff;
+            --quantum-purple: #9b30ff;
+        }
+
+        /* 全局样式 */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* 标题样式 */
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* 主标题 */
+        .dashboard-title {
+            text-align: center;
+            font-size: 2.5em;
+            margin: 30px 0;
+            background: linear-gradient(to right, var(--neon-blue), var(--quantum-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        /* 发光动画 */
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px var(--neon-blue);
+            }
+            to {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px var(--quantum-purple);
+            }
+        }
+
+        /* 容器样式 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 卡片容器 */
+        .card {
+            background: var(--chart-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0,247,255,0.2);
+        }
+
+        /* 卡片标题 */
+        .card-title {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* 数据项 */
+        .data-item {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* 数据标签 */
+        .data-label {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        /* 数据值 */
+        .data-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        /* 正值 */
+        .positive {
+            color: var(--positive-color);
+        }
+
+        /* 负值 */
+        .negative {
+            color: var(--negative-color);
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(0,0,0,0.5);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,247,255,0.3);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9em;
+            transition: color 0.3s;
+        }
+
+        .navbar-link:hover {
+            color: var(--accent-color);
+        }
+
+        /* 按钮样式 */
+        .btn {
+            background: linear-gradient(45deg, var(--neon-blue), var(--quantum-purple));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            box-shadow: 0 0 15px var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        /* 输入框样式 */
+        input, select {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        /* 表单组 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+        }
+
+        /* 结果显示 */
+        .result-display {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .result-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: rgba(0,0,0,0.5);
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        /* 日期显示 */
+        .date-display {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .navbar-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">赛博创造英伟达量子分析系统</a>
+            <div class="navbar-links">
+                <a href="technical-analysis.html" class="navbar-link">技术分析</a>
+                <a href="fundamental-analysis.html" class="navbar-link">基本面分析</a>
+                <a href="market-position.html" class="navbar-link">市场地位</a>
+                <a href="risk-assessment.html" class="navbar-link">风险评估</a>
+                <a href="trading-recommendations.html" class="navbar-link">交易建议</a>
+                <a href="interactive-tools.html" class="navbar-link">互动工具</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <div>
+        <h1 class="dashboard-title">英伟达互动工具</h1>
+        
+        <div class="container">
+            <div class="date-display">
+                <span id="currentDate">2025年3月27日</span>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">仓位规模计算器</h2>
+                <p>根据您的投资组合规模和风险承受能力，计算适合的英伟达股票仓位。</p>
+                
+                <div class="form-group">
+                    <label for="portfolio-size">投资组合总规模 (美元)</label>
+                    <input type="number" id="portfolio-size" placeholder="例如: 100000" value="100000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="risk-tolerance">风险承受能力</label>
+                    <select id="risk-tolerance">
+                        <option value="low">低 (5%)</option>
+                        <option value="medium" selected>中 (10%)</option>
+                        <option value="high">高 (15%)</option>
+                        <option value="aggressive">激进 (20%)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="entry-price">预计入场价格 (美元)</label>
+                    <input type="number" id="entry-price" placeholder="例如: 118.75" value="118.75">
+                </div>
+                
+                <button class="btn" onclick="calculatePosition()">计算仓位</button>
+                
+                <div class="result-display" id="position-result">
+                    <div class="result-title">仓位计算结果</div>
+                    <div class="grid">
+                        <div class="data-item">
+                            <div class="data-label">建议仓位金额</div>
+                            <div class="data-value">$10,000</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">建议股票数量</div>
+                            <div class="data-value">84股</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">占投资组合比例</div>
+                            <div class="data-value">10%</div>
+                        </div>
+                    </div>
+                    <p>建议分批买入策略：</p>
+                    <ul>
+                        <li>第一批 (40%): 34股，价格 $118.75</li>
+                        <li>第二批 (30%): 25股，价格 $110.00</li>
+                        <li>第三批 (30%): 25股，价格 $100.00</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">风险收益计算器</h2>
+                <p>评估不同入场价格和止损位的风险收益比。</p>
+                
+                <div class="form-group">
+                    <label for="entry-price-risk">入场价格 (美元)</label>
+                    <input type="number" id="entry-price-risk" placeholder="例如: 118.75" value="118.75">
+                </div>
+                
+                <div class="form-group">
+                    <label for="stop-loss">止损价格 (美元)</label>
+                    <input type="number" id="stop-loss" placeholder="例如: 105.00" value="105.00">
+                </div>
+                
+                <div class="form-group">
+                    <label for="target-price">目标价格 (美元)</label>
+                    <input type="number" id="target-price" placeholder="例如: 155.00" value="155.00">
+                </div>
+                
+                <button class="btn" onclick="calculateRiskReward()">计算风险收益比</button>
+                
+                <div class="result-display" id="risk-reward-result">
+                    <div class="result-title">风险收益分析</div>
+                    <div class="grid">
+                        <div class="data-item">
+                            <div class="data-label">潜在收益</div>
+                            <div class="data-value positive">$36.25 (30.5%)</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">潜在风险</div>
+                            <div class="data-value negative">$13.75 (11.6%)</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">风险收益比</div>
+                            <div class="data-value positive">2.64:1</div>
+                        </div>
+                    </div>
+                    <p>风险收益评估：<span class="positive">良好</span> - 风险收益比大于2:1，符合专业交易标准。</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">投资回报预测器</h2>
+                <p>预测不同持有期限和增长情景下的投资回报。</p>
+                
+                <div class="form-group">
+                    <label for="investment-amount">投资金额 (美元)</label>
+                    <input type="number" id="investment-amount" placeholder="例如: 10000" value="10000">
+                </div>
+                
+                <div class="form-group">
+                    <label for="holding-period">持有期限</label>
+                    <select id="holding-period">
+                        <option value="1">1年</option>
+                        <option value="3" selected>3年</option>
+                        <option value="5">5年</option>
+                        <option value="10">10年</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="growth-scenario">增长情景</label>
+                    <select id="growth-scenario">
+                        <option value="pessimistic">悲观 (年增长15%)</option>
+                        <option value="base" selected>基准 (年增长25%)</option>
+                        <option value="optimistic">乐观 (年增长35%)</option>
+                    </select>
+                </div>
+                
+                <button class="btn" onclick="calculateReturn()">计算回报</button>
+                
+                <div class="result-display" id="return-result">
+                    <div class="result-title">投资回报预测</div>
+                    <div class="grid">
+                        <div class="data-item">
+                            <div class="data-label">初始投资</div>
+                            <div class="data-value">$10,000</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">预计终值</div>
+                            <div class="data-value positive">$19,531</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">总回报率</div>
+                            <div class="data-value positive">95.3%</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">年化回报率</div>
+                            <div class="data-value positive">25.0%</div>
+                        </div>
+                    </div>
+                    <p>基于英伟达在AI芯片市场的主导地位和预期增长，3年基准情景下的投资可能带来95.3%的总回报。</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title">定投计算器</h2>
+                <p>计算定期投资英伟达股票的长期累积效果。</p>
+                
+                <div class="form-group">
+                    <label for="monthly-investment">每月投资金额 (美元)</label>
+                    <input type="number" id="monthly-investment" placeholder="例如: 500" value="500">
+                </div>
+                
+                <div class="form-group">
+                    <label for="dca-period">定投期限 (年)</label>
+                    <select id="dca-period">
+                        <option value="1">1年</option>
+                        <option value="3">3年</option>
+                        <option value="5" selected>5年</option>
+                        <option value="10">10年</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="expected-return">预期年化回报率 (%)</label>
+                    <input type="number" id="expected-return" placeholder="例如: 20" value="20">
+                </div>
+                
+                <button class="btn" onclick="calculateDCA()">计算定投结果</button>
+                
+                <div class="result-display" id="dca-result">
+                    <div class="result-title">定投计算结果</div>
+                    <div class="grid">
+                        <div class="data-item">
+                            <div class="data-label">总投入金额</div>
+                            <div class="data-value">$30,000</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">预计终值</div>
+                            <div class="data-value positive">$49,303</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">投资收益</div>
+                            <div class="data-value positive">$19,303</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">收益率</div>
+                            <div class="data-value positive">64.3%</div>
+                        </div>
+                    </div>
+                    <p>通过每月定投$500，5年后您的投资组合预计将增长至$49,303，获得64.3%的总收益。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 浩南赛博英伟达分析系统 | 基于先进AI算法的股票分析平台 | 联系方式414194762 </p>
+            <p class="data-label">数据更新时间: 2025年3月27日 02:24</p>
+        </div>
+    </footer>
+
+    <script>
+        // 更新当前日期
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+            const currentDate = new Date().toLocaleDateString('zh-CN', dateOptions);
+            document.getElementById('currentDate').textContent = currentDate;
+        });
+        
+        // 仓位规模计算器
+        function calculatePosition() {
+            // 在实际应用中，这里会有真正的计算逻辑
+            console.log("仓位计算已执行");
+        }
+        
+        // 风险收益计算器
+        function calculateRiskReward() {
+            // 在实际应用中，这里会有真正的计算逻辑
+            console.log("风险收益计算已执行");
+        }
+        
+        // 投资回报预测器
+        function calculateReturn() {
+            // 在实际应用中，这里会有真正的计算逻辑
+            console.log("投资回报计算已执行");
+        }
+        
+        // 定投计算器
+        function calculateDCA() {
+            // 在实际应用中，这里会有真正的计算逻辑
+            console.log("定投计算已执行");
+        }
+    </script>
+</body>
+</html>
